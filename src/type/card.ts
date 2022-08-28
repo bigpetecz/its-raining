@@ -35,3 +35,8 @@ export interface Card {
     symbol: CardSymbol;
     color: CardColor;
 }
+
+export const getCardSymbol = (value: CardValue): CardSymbol => ({
+    value,
+    numericValue: cardNumericValue[value]    
+})
