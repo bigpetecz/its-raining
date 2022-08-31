@@ -8,7 +8,7 @@ export const Players: React.FC = () => {
     return (
         <>
             {players.inGame.map((player, index) => <div key={player.name} style={{color: player.color}}>
-                <strong>Player {index+1}: </strong> {player.name}
+                <strong>Player {index+1}: </strong> {player.name} ({player.inHand.length} cards)
                 <ul>
                     {player.inHand.map(card => <li 
                         style={{color: [CardColor.Hearts, CardColor.Diamonds].includes(card.color) ? 'red' : 'black'}} 

@@ -1,6 +1,7 @@
 import { combineEpics } from "redux-observable";
-import { deckEpic } from "store/deck";
+import { deckEpic, drawFromDeckEpic } from "store/deck";
 
 export const rootEpic = combineEpics(
-    deckEpic
+    deckEpic,
+    drawFromDeckEpic,
 );

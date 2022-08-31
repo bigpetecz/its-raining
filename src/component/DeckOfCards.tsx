@@ -7,7 +7,7 @@ export const DeckOfCards: React.FC = () => {
     const deck = useSelector(selectDeck);
     return (
         <>
-            <div><strong>Deck:</strong></div>
+            <div><strong>Deck:</strong> ({deck.cards.length} cards)</div>
             <ul>
                 {deck.cards.map(card => <li style={{color: [CardColor.Hearts, CardColor.Diamonds].includes(card.color) ? 'red' : 'black'}} key={`${card.color}${card.symbol.numericValue}`}>{card.color} {card.symbol.value}</li>)}
             </ul>

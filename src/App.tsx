@@ -2,7 +2,7 @@ import React from 'react';
 import { DeckOfCards } from 'component/DeckOfCards';
 import { useAppDispatch } from 'store/hook';
 import { dealCards, prepareDeck, shuffleDeck } from 'store/deck';
-import { addPlayer } from 'store/players';
+import { addPlayer, clearHand, setPlayerTurn } from 'store/players';
 import { Players } from 'component/Players';
 
 const App: React.FC = () => {
@@ -17,12 +17,15 @@ const App: React.FC = () => {
       color: 'blue',
       inHand: []
     }));
+    dispatch(clearHand('1'));
     dispatch(addPlayer({
       id: '2',
       name: 'Andrea',
       color: 'green',
       inHand: [],
     }));
+    dispatch(clearHand('2'));
+    dispatch(setPlayerTurn('1'));
     dispatch(dealCards());
   }, [dispatch]);
 
