@@ -1,7 +1,7 @@
 import { createSelector, createSlice, current, PayloadAction } from '@reduxjs/toolkit'
 import { concat, concatMap, exhaustMap, filter, map, merge, mergeMap, of, tap, withLatestFrom } from 'rxjs'
 
-import { shuffle } from 'helper/array'
+import { shuffle } from 'utils/array'
 import { RootState } from 'store'
 import { addCardsToPlayer, selectPlayers, setNextPlayerTurn } from 'store/players'
 import { Card, CardColor, cardNumericValue, CardValue } from 'type/card'
