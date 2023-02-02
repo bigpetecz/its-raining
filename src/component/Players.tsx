@@ -1,19 +1,29 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
-import { selectPlayers } from 'store/players';
-import { CardColor } from 'type/card';
+import { Card, CardColor } from 'type/card';
+import { Player } from 'type/player';
 
-export const Players: React.FC = () => {
-    const players = useSelector(selectPlayers);
+interface PlayersProps {
+    playerTurn: string | null,
+    playCard: (card: Card, player: Player) => void,
+    players: Player[]
+}
+
+export const Players: React.FC<PlayersProps> = ({
+    players,
+    playCard,
+    playerTurn
+}) => {
     return (
         <>
-            {players.inGame.map((player, index) => <div key={player.name} style={{color: player.color}}>
-                <strong>Player {index+1}: </strong> {player.name} ({player.inHand.length} cards)
+            {players.map((player, index) => <div key={player.name} style={{color: player.color}}>
+                <strong>Player {index+1}: </strong> {player.name} ({player.inHand.length} cards) {playerTurn === player.id ? '(Turn)' : ''}
                 <ul>
                     {player.inHand.map(card => <li 
                         style={{color: [CardColor.Hearts, CardColor.Diamonds].includes(card.color) ? 'red' : 'black'}} 
                         key={`${player.id}${card.color}${card.symbol.numericValue}`}
-                    >{card.color} {card.symbol.value}</li>)}
+                    >
+                        {playerTurn === player.id ? <a style={{ cursor: 'pointer' }} onClick={() => playCard(card, player)}>{card.color} {card.symbol.value} ({card.index})</a>: <>{card.color} {card.symbol.value} ({card.index})</>}
+                    </li>)}
                 </ul>
                 </div>)}
         </>

@@ -8,7 +8,8 @@ export enum CardColor {
     Spades = '♠︎',
     Diamonds = '♦︎',
     Clubs = '♣︎'
-};
+}
+
 export enum CardValue {
     Seven = '7',
     Eight = '8',
@@ -34,6 +35,7 @@ export const cardNumericValue = {
 export interface Card {
     symbol: CardSymbol;
     color: CardColor;
+    index: number;
 }
 
 export const getCardSymbol = (value: CardValue): CardSymbol => ({

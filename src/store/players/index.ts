@@ -1,4 +1,4 @@
-import { createSelector, createSlice, current, PayloadAction } from '@reduxjs/toolkit'
+import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 import { RootState } from 'store'
 import { Card } from 'type/card'
@@ -50,7 +50,7 @@ export const deckSlice = createSlice({
       });
     },
     playerMove: (state, action: PayloadAction<{ playerId: string, card: Card}>) => {
-
+      return undefined;
     },
     setPlayerTurn: (state, action: PayloadAction<ID>) => {
       state.inTurn = action.payload;

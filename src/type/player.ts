@@ -6,5 +6,6 @@ export interface Player {
     id: ID;
     name: string;
     color: string;
-    inHand: Card[]
+    inHand: Card[],
+    handIndexes: number[],
 }

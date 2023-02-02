@@ -1,9 +1,11 @@
-import { createSelector, createSlice, current, PayloadAction } from '@reduxjs/toolkit'
-import { concat, concatMap, exhaustMap, filter, map, merge, mergeMap, of, tap, withLatestFrom } from 'rxjs'
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
+import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { concatMap, exhaustMap, filter, of } from 'rxjs'
 
 import { shuffle } from 'utils/array'
 import { RootState } from 'store'
-import { addCardsToPlayer, selectPlayers, setNextPlayerTurn } from 'store/players'
+import { addCardsToPlayer, setNextPlayerTurn } from 'store/players'
 import { Card, CardColor, cardNumericValue, CardValue } from 'type/card'
 
 interface DeckState {
@@ -33,10 +35,10 @@ export const deckSlice = createSlice({
         state.cards = shuffle(state.cards);
     },
     dealCards: (_state) => {
-        
+        return undefined;
     },
     drawCards: (_state, _action: PayloadAction<{ playerId: string, count: number }>) => {
-
+      return undefined;
     },
     removeCards: (state, action: PayloadAction<number>) => {
       state.cards = [ ...state.cards.slice(action.payload, state.cards.length)]
