@@ -9,40 +9,48 @@ const id = 'prsi';
 
 interface GameContext {
   players: Player[];
-  playedIndexes: number[];
-  packageIndexes: number[];
   allCards: Card[];
   deck: Card[];
   game: Card[];
   playerTurn: ID | null;
   winner?: Player;
 }
+type GameEvent =
+  | {
+      type: 'PLAY_CARD';
+      player: Player;
+      card: Card;
+    }
+  | {
+      type: 'EVALUATE_MOVE';
+    }
+  | {
+      type: 'START_GAME';
+      players: Player[];
+    }
+  | {
+      type: 'RESET_GAME';
+    };
 
-type PlayCardEvent = {
-  type: 'PLAY_CARD';
-  player: Player;
-  card: Card;
-};
-type DrawCardEvent = {
-  type: 'DRAW_CARD';
-  player: Player;
-  count: number;
-};
-type StartGameEvent = {
-  type: 'START_GAME';
-  players: Player[];
-};
-type ResetGameEvent = {
-  type: 'RESET_GAME';
-};
+type GameTypeState =
+  | {
+      value: 'standby';
+      context: GameContext;
+    }
+  | {
+      value: 'playing';
+      context: GameContext;
+    }
+  | {
+      value: 'won';
+      context: GameContext;
+    };
 
 export const gameMachine = createMachine<GameContext>(
   {
     id,
     context: {
       players: [],
-      playedIndexes: [],
-      packageIndexes: [],
       allCards: [],
       game: [],
       deck: [],
@@ -75,11 +83,7 @@ export const gameMachine = createMachine<GameContext>(
               },
               PLAY_CARD: {
                 target: 'playerTurn',
-                actions: 'playCard',
-              },
-              DRAW_CARD: {
-                target: 'playerTurn',
-                actions: 'drawCard',
+                actions: ['playCard', 'evaluateMove'],
               },
             },
           },
@@ -103,7 +107,7 @@ export const gameMachine = createMachine<GameContext>(
           ...card,
           index,
         }));
-        const players = event.players;
+        const players: Player[] = event.players;
 
         let cardDealt = 0;
 
@@ -138,9 +142,10 @@ export const gameMachine = createMachine<GameContext>(
       }),
       reset: assign((_context) => ({
         players: [],
-        playedIndexes: [],
-        packageIndexes: [],
         allCards: [],
+        game: [],
+        deck: [],
+        winner: undefined,
       })),
       playCard: assign((context, event) => {
         const playerIndex = findIndex(context.players, { id: event.player.id });
@@ -159,7 +164,8 @@ export const gameMachine = createMachine<GameContext>(
           playerTurn: playerTurn.id,
         };
       }),
-      drawCard: assign((context, event) => {
+      evaluateMove: assign((context, event) => {
+        debugger;
         return {
           ...context,
         };

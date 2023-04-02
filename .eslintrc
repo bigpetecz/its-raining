@@ -16,7 +16,8 @@
                 "allowString" : false,
                 "allowNumber" : false
             }
-        ]
+        ],
+        "no-debugger": "off"
     },
     "ignorePatterns": ["src/**/*.test.ts", "src/frontend/generated/*"]
 }
