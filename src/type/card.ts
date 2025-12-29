@@ -2,7 +2,7 @@ interface CardSymbol {
     value: CardValue;
     numericValue: number;
 }
-// srdce, piky, kara, trefy (listy)
+
 export enum CardColor {
     Hearts = '♥︎',
     Spades = '♠︎',
@@ -19,6 +19,13 @@ export enum CardValue {
     Queen = 'Q',
     King = 'K',
     Ace = 'A'
+}
+
+export enum SpecialCardType {
+    Seven = 'SEVEN_DRAW_2',        // Draw 2 cards (stackable)
+    Ace = 'ACE_SKIP',               // Skip next player
+    Queen = 'QUEEN_CHANGE_COLOR',   // Change color
+    KingOfClubs = 'KING_CLUBS_DRAW_4' // Draw 4 cards
 }
 
 export const cardNumericValue = {
