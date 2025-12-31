@@ -1,17 +1,19 @@
+'use client';
+
 import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { DeckOfCards } from 'component/DeckOfCards';
-import { Players } from 'component/Players';
-import { Card } from 'component/Card';
-import { GameStatusLog } from 'component/GameStatusLog';
+import { DeckOfCards } from '../component/DeckOfCards';
+import { Players } from '../component/Players';
+import { Card } from '../component/Card';
+import { GameStatusLog } from '../component/GameStatusLog';
 import { useMachine } from '@xstate/react';
-import { gameMachine } from 'state';
-import { Card as CardType, CardColor } from 'type/card';
-import { Player } from 'type/player';
-import { ENV } from 'config/environment';
-import styles from './App.module.css';
+import { gameMachine } from '../state';
+import { Card as CardType, CardColor } from '../type/card';
+import { Player } from '../type/player';
+import { ENV } from '../config/environment';
+import styles from './page.module.css';
 
-const App: React.FC = () => {
+export default function Home() {
   const [state, send] = useMachine(gameMachine);
 
   useEffect(() => {
@@ -99,6 +101,4 @@ const App: React.FC = () => {
       </div>
     </div>
   );
-};
-
-export default App;
+}

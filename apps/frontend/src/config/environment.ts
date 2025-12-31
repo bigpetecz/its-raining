@@ -2,31 +2,31 @@
  * Environment Configuration
  * 
  * This module provides centralized access to all environment variables.
- * Environment variables should be prefixed with VITE_ to be accessible in the browser.
+ * Environment variables should be prefixed with NEXT_PUBLIC_ for Next.js
  * 
- * .env file format:
- * VITE_VAR_NAME=value
+ * .env.local file format:
+ * NEXT_PUBLIC_VAR_NAME=value
  * 
- * Note: Using import.meta.env for Vite instead of process.env (Create React App)
+ * Note: Using process.env for Next.js (compatible with both server and client)
  */
 
 export const ENV = {
   // Debug Logging
-  DEBUG_LOG_ENABLED: import.meta.env.VITE_DEBUG_LOG === 'true',
+  DEBUG_LOG_ENABLED: process.env.NEXT_PUBLIC_DEBUG_LOG === 'true',
 
   // UI Visibility
-  SHOW_DECK: import.meta.env.VITE_SHOW_DECK === 'true',
+  SHOW_DECK: process.env.NEXT_PUBLIC_SHOW_DECK === 'true',
 
   // Application Environment
-  ENV_NAME: (import.meta.env.VITE_ENV as string | undefined) ?? import.meta.env.MODE ?? 'development',
+  ENV_NAME: (process.env.NEXT_PUBLIC_ENV as string | undefined) ?? process.env.NODE_ENV ?? 'development',
 
   // API Configuration (for future use)
-  API_URL: import.meta.env.VITE_API_URL as string | undefined,
-  API_TIMEOUT: parseInt((import.meta.env.VITE_API_TIMEOUT as string | undefined) ?? '5000', 10),
+  API_URL: process.env.NEXT_PUBLIC_API_URL as string | undefined,
+  API_TIMEOUT: parseInt((process.env.NEXT_PUBLIC_API_TIMEOUT as string | undefined) ?? '5000', 10),
 
   // Feature Flags (for future use)
-  FEATURE_MULTIPLAYER: import.meta.env.VITE_FEATURE_MULTIPLAYER === 'true',
-  FEATURE_LEADERBOARD: import.meta.env.VITE_FEATURE_LEADERBOARD === 'true',
+  FEATURE_MULTIPLAYER: process.env.NEXT_PUBLIC_FEATURE_MULTIPLAYER === 'true',
+  FEATURE_LEADERBOARD: process.env.NEXT_PUBLIC_FEATURE_LEADERBOARD === 'true',
 };
 
 /**

@@ -1,0 +1,107 @@
+.appContainer {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 2rem;
+  padding: 2rem;
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  width: 100vw !important;
+  max-width: 100vw !important;
+  box-sizing: border-box;
+  margin: 0;
+  overflow-x: hidden;
+}
+
+.playersSection {
+  background: white;
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  max-height: calc(100vh - 4rem);
+  min-width: 0;
+}
+
+.gameStateSection {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 2rem;
+  max-height: calc(100vh - 4rem);
+  min-width: 0;
+}
+
+.topCardContainer {
+  background: white;
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  min-width: 0;
+}
+
+.topCardTitle {
+  font-weight: bold;
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.gameLogSection {
+  background: white;
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  min-height: 300px;
+  min-width: 0;
+}
+
+.deckSection {
+  background: white;
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  max-height: 250px;
+  min-width: 0;
+}
+
+@media (max-width: 1024px) {
+  .appContainer {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .playersSection,
+  .gameStateSection {
+    max-height: none;
+  }
+  
+  .gameStateSection {
+    grid-template-rows: auto;
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .appContainer {
+    grid-template-columns: 1fr !important;
+    padding: 1rem;
+    gap: 1rem;
+  }
+  
+  .gameStateSection {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .topCardContainer,
+  .gameLogSection,
+  .deckSection {
+    min-height: auto;
+  }
+}
