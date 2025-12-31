@@ -1,0 +1,56 @@
+.colorSelectorOverlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.colorSelectorDialog {
+  background-color: #fff;
+  padding: 32px;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  text-align: center;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 24px;
+}
+
+.colorGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.colorButton {
+  padding: 16px 24px;
+  font-size: 16px;
+  font-weight: bold;
+  border: 2px solid #333;
+  border-radius: 8px;
+  background-color: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 120px;
+}
+
+.colorButton:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.colorButton.red {
+  color: #d32f2f;
+  border-color: #d32f2f;
+}
+
+.colorButton.black {
+  color: #000;
+  border-color: #000;
+}

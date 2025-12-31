@@ -1,0 +1,60 @@
+.card {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 120px;
+  border: 2px solid #333;
+  border-radius: 8px;
+  padding: 8px;
+  background-color: #fff;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  font-size: 20px;
+  font-weight: bold;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.card.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.card.disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.card.playable {
+  box-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+  border-color: gold;
+}
+
+.card.playable:hover {
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.8), 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.symbol {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.value {
+  font-size: 12px;
+  line-height: 1;
+}
+
+.red {
+  color: #d32f2f;
+}
+
+.black {
+  color: #000;
+}

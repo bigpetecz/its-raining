@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="900" viewBox="0 0 600 900">
+  <!-- Rámeček -->
+  <rect x="5" y="5" width="590" height="890" rx="20" ry="20"
+        fill="white" stroke="#222" stroke-width="10"/>
+
+  <!-- Hodnota v levém horním -->
+  <text x="40" y="90" font-family="serif" font-size="90" fill="green">Král</text>
+
+  <!-- Hodnota v pravém dolním (invertovaná) -->
+  <g transform="translate(600,900) rotate(180)">
+    <text x="40" y="90" font-family="serif" font-size="90" fill="green">Král</text>
+  </g>
+
+  <!-- Figurky krále (dvouhlavé) -->
+  <g transform="translate(300,450)">
+    <!-- Horní hlava -->
+    <g id="horní-hlava">
+      <circle cx="0" cy="-150" r="40" fill="#ffcc99" stroke="#222" stroke-width="3"/> <!-- hlava -->
+      <rect x="-25" y="-110" width="50" height="100" fill="blue" stroke="#222" stroke-width="3"/> <!-- tělo -->
+      <polygon points="-25,-110 0,-160 25,-110" fill="red" stroke="#222" stroke-width="3"/> <!-- koruna -->
+      <path d="M -15 -80 Q 0 -120 15 -80" stroke="gold" fill="none" stroke-width="3"/> <!-- ornament -->
+    </g>
+    <!-- Dolní hlava (inverze) -->
+    <g transform="rotate(180)">
+      <circle cx="0" cy="-150" r="40" fill="#ffcc99" stroke="#222" stroke-width="3"/>
+      <rect x="-25" y="-110" width="50" height="100" fill="blue" stroke="#222" stroke-width="3"/>
+      <polygon points="-25,-110 0,-160 25,-110" fill="red" stroke="#222" stroke-width="3"/>
+      <path d="M -15 -80 Q 0 -120 15 -80" stroke="gold" fill="none" stroke-width="3"/>
+    </g>
+
+    <!-- Ornament uprostřed mezi hlavami -->
+    <circle cx="0" cy="0" r="30" fill="gold" stroke="#222" stroke-width="4"/>
+  </g>
+</svg>

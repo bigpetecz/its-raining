@@ -1,118 +1,93 @@
 import React from 'react';
-import { Card, CardColor } from 'type/card';
+import { motion } from 'framer-motion';
+import { Card as CardType, CardColor } from 'type/card';
 import { Player } from 'type/player';
-import { isValidMove } from 'utils/gameRules';
+import { PlayerHand } from './PlayerHand';
+import { ColorSelector } from './ColorSelector';
+import styles from './Players.module.css';
 
 interface PlayersProps {
-    playerTurn: string | null,
-    playCard: (card: Card, player: Player) => void,
-    drawCard: (player: Player) => void,
-    players: Player[],
-    topCard: Card | null,
-    awaitingColorSelection: boolean,
-    onSelectColor: (color: CardColor) => void,
-    mustDrawCards: boolean
+  playerTurn: string | null;
+  playCard: (card: CardType, player: Player) => void;
+  drawCard: (player: Player) => void;
+  players: Player[];
+  topCard: CardType | null;
+  awaitingColorSelection: boolean;
+  onSelectColor: (color: CardColor) => void;
+  mustDrawCards: boolean;
+  selectedColor?: CardColor;
+  awaitingAceResponse?: boolean;
 }
 
 export const Players: React.FC<PlayersProps> = ({
-    players,
-    playCard,
-    drawCard,
-    playerTurn,
-    topCard,
-    awaitingColorSelection,
-    onSelectColor,
-    mustDrawCards
+  players,
+  playCard,
+  drawCard,
+  playerTurn,
+  topCard,
+  awaitingColorSelection,
+  onSelectColor,
+  mustDrawCards,
+  selectedColor,
+  awaitingAceResponse,
 }) => {
-    const canPlayCard = (card: Card): boolean => {
-        return topCard !== null && isValidMove(card, topCard, undefined, mustDrawCards);
-    }
+  return (
+    <div className={styles.playerContainer}>
+      <ColorSelector isOpen={awaitingColorSelection} onSelectColor={onSelectColor} />
+      {players.map((player, index) => {
+        const isPlayerTurn = playerTurn === player.id;
+        const isWaitingForColor =
+          awaitingColorSelection === true && isPlayerTurn === true;
 
-    const colorOptions = Object.values(CardColor);
+        return (
+          <motion.div
+            key={player.id}
+            className={`${styles.playerCard} ${
+              isPlayerTurn === true ? styles.active : ''
+            }`}
+            layout
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: index * 0.1 }}
+          >
+            <div className={styles.playerHeader}>
+              <div className={styles.playerName}>
+                {isPlayerTurn === true && (
+                  <span className={styles.turnIndicator} />
+                )}
+                <span>
+                  Player {index + 1}: {player.name}
+                </span>
+              </div>
+              <div className={styles.headerRight}>
+                <div className={styles.cardCount}>
+                  {player.inHand.length} cards
+                </div>
+                {isPlayerTurn === true && awaitingColorSelection === false && (
+                  <motion.button
+                    className={styles.drawButton}
+                    onClick={() => drawCard(player)}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Draw Card
+                  </motion.button>
+                )}
+              </div>
+            </div>
 
-    return (
-        <>
-            {players.map((player, index) => {
-                const isPlayerTurn = playerTurn === player.id;
-                const isWaitingForColor = awaitingColorSelection === true && isPlayerTurn === true;
-                const canPlay = isPlayerTurn === true && topCard !== null && awaitingColorSelection === false;
-                const hasValidMove = canPlay === true && player.inHand.some(canPlayCard);
-
-                return (
-                    <div key={player.name} style={{
-                        color: player.color,
-                        padding: '10px',
-                        border: isPlayerTurn === true ? '2px solid gold' : '1px solid #ccc',
-                        borderRadius: '5px',
-                        marginBottom: '10px'
-                    }}>
-                        <strong>Player {index+1}: </strong> {player.name} ({player.inHand.length} cards) {isPlayerTurn === true ? '👈 (Turn)' : ''}
-                        
-                        {isWaitingForColor === true && (
-                            <div style={{
-                                backgroundColor: '#fffacd',
-                                padding: '10px',
-                                borderRadius: '5px',
-                                marginTop: '10px',
-                                marginBottom: '10px'
-                            }}>
-                                <p><strong>Zvolte barvu pro Dámu:</strong></p>
-                                <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
-                                    {colorOptions.map(color => (
-                                        <button
-                                            key={color}
-                                            onClick={() => onSelectColor(color)}
-                                            style={{
-                                                fontSize: '16px',
-                                                padding: '8px 12px',
-                                                backgroundColor: '#fff',
-                                                border: '2px solid #333',
-                                                borderRadius: '5px',
-                                                cursor: 'pointer',
-                                                color: [CardColor.Hearts, CardColor.Diamonds].includes(color) === true ? 'red' : 'black',
-                                                fontWeight: 'bold'
-                                            }}
-                                        >
-                                            {color}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-
-                        {isPlayerTurn === true && hasValidMove === false && awaitingColorSelection === false && (
-                            <div style={{color: 'red', marginTop: '5px'}}>
-                                <button onClick={() => drawCard(player)}>
-                                    Draw Card
-                                </button>
-                            </div>
-                        )}
-                        <ul>
-                            {player.inHand.map(card => {
-                                const isValid = canPlayCard(card);
-                                return (
-                                    <li 
-                                        key={`${player.id}${card.color}${card.symbol.numericValue}`}
-                                        style={{
-                                            color: [CardColor.Hearts, CardColor.Diamonds].includes(card.color) === true ? 'red' : 'black',
-                                            opacity: canPlay === true && isValid === false ? 0.5 : 1,
-                                            cursor: canPlay === true && isValid === true ? 'pointer' : 'default'
-                                        }}
-                                    >
-                                        {canPlay === true && isValid === true ? (
-                                            <a style={{ cursor: 'pointer', textDecoration: 'underline' }} onClick={() => playCard(card, player)}>
-                                                {card.color} {card.symbol.value}
-                                            </a>
-                                        ) : (
-                                            <>{card.color} {card.symbol.value}</>
-                                        )}
-                                    </li>
-                                );
-                            })}
-                        </ul>
-                    </div>
-                );
-            })}
-        </>
-    )
-}
+            <PlayerHand
+              player={player}
+              topCard={topCard}
+              isPlayerTurn={isPlayerTurn && !isWaitingForColor}
+              onPlayCard={(card) => playCard(card, player)}
+              mustDrawCards={mustDrawCards}
+              selectedColor={selectedColor}
+              awaitingAceResponse={awaitingAceResponse}
+            />
+          </motion.div>
+        );
+      })}
+    </div>
+  );
+};

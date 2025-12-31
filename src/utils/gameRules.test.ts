@@ -35,7 +35,7 @@ describe('gameRules - isSpecialCard', () => {
 
   it('should identify King of Spades as special card', () => {
     const card = createCard(CardValue.King, CardColor.Spades);
-    expect(isSpecialCard(card)).toBe(SpecialCardType.KingOfClubs);
+    expect(isSpecialCard(card)).toBe(SpecialCardType.KingOfSpades);
   });
 
   it('should NOT identify King of other colors as special card', () => {
@@ -69,16 +69,28 @@ describe('gameRules - isValidMove', () => {
       expect(isValidMove(played, top, undefined, false)).toBe(true);
     });
 
-    it('should allow playing 7 only on same color', () => {
+    it('should allow playing 7 on same color', () => {
       const played7 = createCard(CardValue.Seven, CardColor.Hearts);
       const top = createCard(CardValue.Eight, CardColor.Hearts);
       expect(isValidMove(played7, top, undefined, false)).toBe(true);
     });
 
-    it('should NOT allow playing 7 on different color', () => {
+    it('should NOT allow playing 7 on different color when top is not a 7', () => {
       const played7 = createCard(CardValue.Seven, CardColor.Hearts);
       const top = createCard(CardValue.Eight, CardColor.Spades);
       expect(isValidMove(played7, top, undefined, false)).toBe(false);
+    });
+
+    it('should allow playing 7 on any 7 regardless of color', () => {
+      const played7 = createCard(CardValue.Seven, CardColor.Hearts);
+      const top7 = createCard(CardValue.Seven, CardColor.Spades);
+      expect(isValidMove(played7, top7, undefined, false)).toBe(true);
+    });
+
+    it('should allow playing 7 of different color on 7 of any color', () => {
+      const played7 = createCard(CardValue.Seven, CardColor.Diamonds);
+      const top7 = createCard(CardValue.Seven, CardColor.Clubs);
+      expect(isValidMove(played7, top7, undefined, false)).toBe(true);
     });
 
     it('should allow playing Ace only on same color', () => {
@@ -87,7 +99,7 @@ describe('gameRules - isValidMove', () => {
       expect(isValidMove(playedAce, top, undefined, false)).toBe(true);
     });
 
-    it('should NOT allow playing Ace on different color (unless it is an Ace)', () => {
+    it('should NOT allow playing Ace on different color in normal play', () => {
       const playedAce = createCard(CardValue.Ace, CardColor.Clubs);
       const top = createCard(CardValue.Eight, CardColor.Hearts);
       expect(isValidMove(playedAce, top, undefined, false)).toBe(false);
@@ -120,16 +132,41 @@ describe('gameRules - isValidMove', () => {
   });
 
   describe('Draw penalty phase (stacking)', () => {
-    it('should allow playing 7 with any color during stacking', () => {
+    it('should allow playing 7 on another 7 during stacking', () => {
       const played7 = createCard(CardValue.Seven, CardColor.Hearts);
-      const top = createCard(CardValue.Seven, CardColor.Spades);
-      expect(isValidMove(played7, top, undefined, true)).toBe(true);
+      const top7 = createCard(CardValue.Seven, CardColor.Spades);
+      expect(isValidMove(played7, top7, undefined, true)).toBe(true);
     });
 
-    it('should allow playing King of Spades with any color during stacking', () => {
+    it('should allow playing 7 of Spades on King of Spades when 7 of Spades is played', () => {
+      // Only 7 of Spades can stack on King of Spades
+      const played7OfSpades = createCard(CardValue.Seven, CardColor.Spades);
+      const kingOfSpades = createCard(CardValue.King, CardColor.Spades);
+      expect(isValidMove(played7OfSpades, kingOfSpades, undefined, true)).toBe(true);
+    });
+
+    it('should NOT allow playing 7 of other colors on King of Spades during stacking', () => {
+      const played7Hearts = createCard(CardValue.Seven, CardColor.Hearts);
+      const kingOfSpades = createCard(CardValue.King, CardColor.Spades);
+      expect(isValidMove(played7Hearts, kingOfSpades, undefined, true)).toBe(false);
+    });
+
+    it('should NOT allow playing 7 of Diamonds on King of Spades during stacking', () => {
+      const played7Diamonds = createCard(CardValue.Seven, CardColor.Diamonds);
+      const kingOfSpades = createCard(CardValue.King, CardColor.Spades);
+      expect(isValidMove(played7Diamonds, kingOfSpades, undefined, true)).toBe(false);
+    });
+
+    it('should NOT allow playing 7 of Clubs on King of Spades during stacking', () => {
+      const played7Clubs = createCard(CardValue.Seven, CardColor.Clubs);
+      const kingOfSpades = createCard(CardValue.King, CardColor.Spades);
+      expect(isValidMove(played7Clubs, kingOfSpades, undefined, true)).toBe(false);
+    });
+
+    it('should NOT allow playing King of Spades on 7 during stacking', () => {
       const playedKing = createCard(CardValue.King, CardColor.Spades);
-      const top = createCard(CardValue.Seven, CardColor.Hearts);
-      expect(isValidMove(playedKing, top, undefined, true)).toBe(true);
+      const top7 = createCard(CardValue.Seven, CardColor.Hearts);
+      expect(isValidMove(playedKing, top7, undefined, true)).toBe(false);
     });
 
     it('should NOT allow playing regular cards during stacking', () => {
@@ -141,13 +178,60 @@ describe('gameRules - isValidMove', () => {
     it('should NOT allow playing Ace during stacking', () => {
       const playedAce = createCard(CardValue.Ace, CardColor.Hearts);
       const top = createCard(CardValue.Seven, CardColor.Spades);
-      expect(isValidMove(playedAce, top, undefined, true)).toBe(false);
+      expect(isValidMove(playedAce, top, undefined, true, false)).toBe(false);
     });
 
     it('should NOT allow playing Queen during stacking', () => {
       const playedQueen = createCard(CardValue.Queen, CardColor.Hearts);
       const top = createCard(CardValue.Seven, CardColor.Spades);
-      expect(isValidMove(playedQueen, top, undefined, true)).toBe(false);
+      expect(isValidMove(playedQueen, top, undefined, true, false)).toBe(false);
+    });
+  });
+
+  describe('Ace response phase (awaitingAceResponse)', () => {
+    it('should allow playing any Ace during Ace response phase', () => {
+      const playedAce = createCard(CardValue.Ace, CardColor.Spades);
+      const topAce = createCard(CardValue.Ace, CardColor.Hearts);
+      expect(isValidMove(playedAce, topAce, undefined, false, true)).toBe(true);
+    });
+
+    it('should allow playing Ace of selected color after Queen color selection', () => {
+      const playedAce = createCard(CardValue.Ace, CardColor.Hearts);
+      const topQueen = createCard(CardValue.Queen, CardColor.Spades);
+      const selectedColor = CardColor.Hearts;
+      expect(isValidMove(playedAce, topQueen, selectedColor, false, false)).toBe(true);
+    });
+
+    it('should NOT allow playing Ace of different color after Queen color selection', () => {
+      const playedAce = createCard(CardValue.Ace, CardColor.Spades);
+      const topQueen = createCard(CardValue.Queen, CardColor.Hearts);
+      const selectedColor = CardColor.Hearts;
+      // Ace must match the selected color in normal play
+      expect(isValidMove(playedAce, topQueen, selectedColor, false, false)).toBe(false);
+    });
+
+    it('should allow playing Ace of different color during Ace response phase', () => {
+      const playedAce = createCard(CardValue.Ace, CardColor.Diamonds);
+      const topAce = createCard(CardValue.Ace, CardColor.Clubs);
+      expect(isValidMove(playedAce, topAce, undefined, false, true)).toBe(true);
+    });
+
+    it('should NOT allow playing non-Ace cards during Ace response phase', () => {
+      const played = createCard(CardValue.Eight, CardColor.Hearts);
+      const top = createCard(CardValue.Ace, CardColor.Spades);
+      expect(isValidMove(played, top, undefined, false, true)).toBe(false);
+    });
+
+    it('should NOT allow playing Queen during Ace response phase', () => {
+      const playedQueen = createCard(CardValue.Queen, CardColor.Hearts);
+      const top = createCard(CardValue.Ace, CardColor.Spades);
+      expect(isValidMove(playedQueen, top, undefined, false, true)).toBe(false);
+    });
+
+    it('should NOT allow playing Seven during Ace response phase', () => {
+      const played7 = createCard(CardValue.Seven, CardColor.Hearts);
+      const top = createCard(CardValue.Ace, CardColor.Spades);
+      expect(isValidMove(played7, top, undefined, false, true)).toBe(false);
     });
   });
 });
@@ -186,16 +270,34 @@ describe('gameRules - canStackSpecialCard', () => {
     expect(canStackSpecialCard(seven1, seven2)).toBe(true);
   });
 
-  it('should allow stacking King of Spades on King of Spades', () => {
-    const king1 = createCard(CardValue.King, CardColor.Spades);
-    const king2 = createCard(CardValue.King, CardColor.Spades);
-    expect(canStackSpecialCard(king1, king2)).toBe(true);
+  it('should allow stacking Seven of Spades on King of Spades', () => {
+    const sevenSpades = createCard(CardValue.Seven, CardColor.Spades);
+    const kingOfSpades = createCard(CardValue.King, CardColor.Spades);
+    expect(canStackSpecialCard(sevenSpades, kingOfSpades)).toBe(true);
   });
 
-  it('should NOT allow stacking Seven on King of Spades', () => {
-    const seven = createCard(CardValue.Seven, CardColor.Hearts);
-    const king = createCard(CardValue.King, CardColor.Spades);
-    expect(canStackSpecialCard(seven, king)).toBe(false);
+  it('should NOT allow stacking Seven of Hearts on King of Spades', () => {
+    const sevenHearts = createCard(CardValue.Seven, CardColor.Hearts);
+    const kingOfSpades = createCard(CardValue.King, CardColor.Spades);
+    expect(canStackSpecialCard(sevenHearts, kingOfSpades)).toBe(false);
+  });
+
+  it('should NOT allow stacking Seven of Diamonds on King of Spades', () => {
+    const sevenDiamonds = createCard(CardValue.Seven, CardColor.Diamonds);
+    const kingOfSpades = createCard(CardValue.King, CardColor.Spades);
+    expect(canStackSpecialCard(sevenDiamonds, kingOfSpades)).toBe(false);
+  });
+
+  it('should NOT allow stacking Seven of Clubs on King of Spades', () => {
+    const sevenClubs = createCard(CardValue.Seven, CardColor.Clubs);
+    const kingOfSpades = createCard(CardValue.King, CardColor.Spades);
+    expect(canStackSpecialCard(sevenClubs, kingOfSpades)).toBe(false);
+  });
+
+  it('should NOT allow stacking King of Spades on King of Spades', () => {
+    const king1 = createCard(CardValue.King, CardColor.Spades);
+    const king2 = createCard(CardValue.King, CardColor.Spades);
+    expect(canStackSpecialCard(king1, king2)).toBe(false);
   });
 
   it('should NOT allow stacking King of Spades on Seven', () => {

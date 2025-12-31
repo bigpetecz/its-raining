@@ -1,6 +1,14 @@
 import { Card, CardColor, CardValue, SpecialCardType } from 'type/card';
 
 /**
+ * Select a random color from all available colors
+ */
+export const selectRandomColor = (): CardColor => {
+    const colors = Object.values(CardColor);
+    return colors[Math.floor(Math.random() * colors.length)];
+};
+
+/**
  * Check if a card is a special card that triggers an effect
  */
 export const isSpecialCard = (card: Card): SpecialCardType | null => {
@@ -23,7 +31,7 @@ export const isSpecialCard = (card: Card): SpecialCardType | null => {
     
     // King of Spades: Draw 4 cards
     if (value === CardValue.King && card.color === CardColor.Spades) {
-        return SpecialCardType.KingOfClubs;
+        return SpecialCardType.KingOfSpades;
     }
     
     return null;
@@ -32,23 +40,46 @@ export const isSpecialCard = (card: Card): SpecialCardType | null => {
 /**
  * Check if a card move is valid against the top card
  * Also handles draw penalty stacking - when draw penalty is active,
- * only Seven and King of Spades can be played to stack the penalty
+ * only Seven can be played to stack the penalty, except:
+ * - When King of Spades initiated the penalty, only Seven of Spades can stack on it
+ * Also handles Ace response - when awaitingAceResponse is true,
+ * ONLY Ace can be played to counter the skip effect, and any Ace can be played on any Ace
  * Valid if:
  * - Same suit (color)
  * - Queen can always be played (allows color change)
- * - Ace/Seven/King of Spades must match color in normal play, but can have any color during stacking
+ * - Ace must match color in normal play, but can have any color during Ace response phase
+ * - Seven can always be played during penalty phase to stack
+ * - King of Spades can only be stacked by Seven of Spades
  * - Regular cards (8, 9, 10, J, K) can be played on same color or same rank
  */
 export const isValidMove = (
     playedCard: Card, 
     topCard: Card, 
     selectedColor?: CardColor,
-    mustDrawCards = false
+    mustDrawCards = false,
+    awaitingAceResponse = false
 ): boolean => {
-    // If draw penalty is active, only Seven and King of Spades can be played to stack
+    const specialType = isSpecialCard(playedCard);
+
+    // If Ace response is active, ONLY Ace can be played to counter the skip
+    // During this phase, any Ace can be played on any Ace regardless of color
+    if (awaitingAceResponse === true) {
+        if (specialType === SpecialCardType.Ace) {
+            // Any Ace can be played on any Ace
+            return isSpecialCard(topCard) === SpecialCardType.Ace;
+        }
+        return false;
+    }
+
+    // If draw penalty is active, only Seven can be played to stack
+    // Exception: when King of Spades initiated the penalty, only 7 of Spades can stack
     if (mustDrawCards === true) {
-        const specialType = isSpecialCard(playedCard);
-        return specialType === SpecialCardType.Seven || specialType === SpecialCardType.KingOfClubs;
+        // If top card is King of Spades, only 7 of Spades can stack on it
+        if (isSpecialCard(topCard) === SpecialCardType.KingOfSpades) {
+            return specialType === SpecialCardType.Seven && playedCard.color === CardColor.Spades;
+        }
+        // Otherwise, any Seven can stack on any card (Seven or other Seven)
+        return specialType === SpecialCardType.Seven;
     }
 
     // If Queen was played, check against the selected color, not the Queen's color
@@ -60,7 +91,6 @@ export const isValidMove = (
     }
     
     // Special cards handling
-    const specialType = isSpecialCard(playedCard);
     const topSpecialType = isSpecialCard(topCard);
     
     // Queen can always be played (allows color change)
@@ -68,19 +98,20 @@ export const isValidMove = (
         return true;
     }
     
-    // Ace can be played on any Ace or same color
+    // Ace must match color in normal play (not during response phase)
+    // Ace can be played on same color or on any other Ace
     if (specialType === SpecialCardType.Ace) {
-        return topSpecialType === SpecialCardType.Ace || playedCard.color === checkColor;
+        return playedCard.color === checkColor || topSpecialType === SpecialCardType.Ace;
     }
     
     // King of Spades must be played on Spades (only playable on Spades color)
-    if (specialType === SpecialCardType.KingOfClubs) {
+    if (specialType === SpecialCardType.KingOfSpades) {
         return playedCard.color === checkColor;
     }
     
-    // Seven must match color (only playable on same color)
+    // Seven can be played on same color OR on any 7
     if (specialType === SpecialCardType.Seven) {
-        return playedCard.color === checkColor;
+        return playedCard.color === checkColor || topSpecialType === SpecialCardType.Seven;
     }
     
     // Same rank (value) - applies to regular cards like 8, 9, 10, J, K
@@ -105,7 +136,7 @@ export const getDrawCount = (
         return consecutiveDrawCards + 2;
     }
     
-    if (specialType === SpecialCardType.KingOfClubs) {
+    if (specialType === SpecialCardType.KingOfSpades) {
         return consecutiveDrawCards + 4;
     }
     
@@ -113,8 +144,10 @@ export const getDrawCount = (
 };
 
 /**
- * Check if a card is playable when draw penalty is pending
- * Only same special card type can be stacked
+ * Check if a card is playable when draw penalty is pending.
+ * Stacking rules:
+ * - Seven cards can always stack on other Seven cards
+ * - King of Clubs can only be stacked by Seven of Clubs (not by other Sevens)
  */
 export const canStackSpecialCard = (
     playedCard: Card,
@@ -128,13 +161,13 @@ export const canStackSpecialCard = (
     }
     
     // Only Seven cards can stack with other Seven cards
-    // Only King of Spades can stack with other King of Spades
     if (playedType === SpecialCardType.Seven && topType === SpecialCardType.Seven) {
         return true;
     }
     
-    if (playedType === SpecialCardType.KingOfClubs && topType === SpecialCardType.KingOfClubs) {
-        return true;
+    // Only Seven of Spades can stack on King of Spades
+    if (playedType === SpecialCardType.Seven && topType === SpecialCardType.KingOfSpades) {
+        return playedCard.color === CardColor.Spades;
     }
     
     return false;
@@ -153,7 +186,7 @@ export const getCardDescription = (card: Card): string => {
             return `${card.color} A - Další hráč vynechává tah`;
         case SpecialCardType.Queen:
             return `${card.color} Q - Mění barvu`;
-        case SpecialCardType.KingOfClubs:
+        case SpecialCardType.KingOfSpades:
             return `${card.color} K - Další hráč si lízne 4 karty`;
         default:
             return `${card.color} ${card.symbol.value}`;

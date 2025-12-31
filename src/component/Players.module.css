@@ -1,0 +1,90 @@
+.playerContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.playerCard {
+  padding: 16px;
+  border-radius: 8px;
+  border: 2px solid #ccc;
+  transition: all 0.2s ease;
+}
+
+.playerCard.active {
+  border-color: gold;
+  background-color: #fffef5;
+  box-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+}
+
+.playerHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.playerName {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.turnIndicator {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: gold;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-direction: row-reverse;
+}
+
+.cardCount {
+  font-size: 14px;
+  color: #666;
+  background-color: #f0f0f0;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.drawButton {
+  padding: 6px 12px;
+  background-color: #ff6b6b;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s ease;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.drawButton:hover {
+  background-color: #ff5252;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(255, 107, 107, 0.3);
+}
+
+.drawButton:active {
+  transform: translateY(0);
+}
